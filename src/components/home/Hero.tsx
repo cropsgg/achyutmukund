@@ -47,16 +47,22 @@ const generateDeterministicParticles = () => {
     return seed / 233280;
   };
   
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 45; i++) {
     particles.push({
       id: `particle-${i}`,
       initialX: `${pseudoRandom() * 100}%`,
       initialY: `${pseudoRandom() * 100}%`,
-      size: pseudoRandom() * 5 + 2,
-      duration: 15 + pseudoRandom() * 15,
+      size: pseudoRandom() * 6 + 1.5,
+      duration: 12 + pseudoRandom() * 18,
+      delay: pseudoRandom() * 5,
+      twinkle: {
+        duration: 1.2 + pseudoRandom() * 3,
+        delay: pseudoRandom() * 2,
+        intensity: [0.4, 0.9, 0.4],
+      },
       color: {
-        r: Math.floor(pseudoRandom() * 100) + 100,
-        g: Math.floor(pseudoRandom() * 50) + 150,
+        r: Math.floor(pseudoRandom() * 120) + 135,
+        g: Math.floor(pseudoRandom() * 70) + 160,
         b: Math.floor(pseudoRandom() * 100) + 200
       },
       positions: {
@@ -83,25 +89,8 @@ const particlesData = generateDeterministicParticles();
 // Enhanced interactive background
 const ParticleBackground = () => {
   const [mounted, setMounted] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Mouse position values for smooth animation
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  
-  // Smooth spring animation for mouse movement
-  const springX = useSpring(mouseX, { stiffness: 50, damping: 10 });
-  const springY = useSpring(mouseY, { stiffness: 50, damping: 10 });
-
-  // Transform mouse position to gradient movement
-  const gradientX = useTransform(springX, [-800, 800], ["-20%", "20%"]);
-  const gradientY = useTransform(springY, [-800, 800], ["-20%", "20%"]);
-  
-  // Cursor trail effect
-  const [trails, setTrails] = useState<{ x: number; y: number; id: number }[]>([]);
-  const trailTimeout = useRef<NodeJS.Timeout | null>(null);
-
   // Animation variants
   const fadeInVariants = {
     hidden: { opacity: 0, scale: 0.8 },
@@ -114,31 +103,7 @@ const ParticleBackground = () => {
 
   useEffect(() => {
     setMounted(true);
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-      
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      
-      mouseX.set(x);
-      mouseY.set(y);
-      
-      // Add new trail point
-      const newTrail = { x: e.clientX, y: e.clientY, id: Date.now() };
-      setTrails(prev => [...prev.slice(-15), newTrail]); // Keep last 15 points
-      
-      // Clear old trails
-      if (trailTimeout.current) clearTimeout(trailTimeout.current);
-      trailTimeout.current = setTimeout(() => {
-        setTrails([]);
-      }, 1000);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
+  }, []);
 
   if (!mounted) {
     return <div className="absolute inset-0 -z-10 overflow-hidden" />;
@@ -152,20 +117,43 @@ const ParticleBackground = () => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Animated gradient background */}
+        {/* Animated gradient background with more dynamic movement */}
         <motion.div 
           className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-gray-950 to-indigo-950/40"
           style={{
-            x: gradientX,
-            y: gradientY,
             backgroundSize: "200% 200%",
             backgroundPosition: "center",
           }}
           animate={{
-            opacity: [0.7, 0.9, 0.7],
+            opacity: [0.65, 0.85, 0.65],
+            backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"]
           }}
           transition={{
-            duration: 8,
+            opacity: {
+              duration: 8,
+              repeat: Infinity,
+              repeatType: "reverse",
+            },
+            backgroundPosition: {
+              duration: 20,
+              repeat: Infinity,
+              repeatType: "reverse",
+            }
+          }}
+        />
+        
+        {/* Subtle nebula-like effect */}
+        <motion.div
+          className="absolute inset-0 opacity-20"
+          style={{
+            background: "radial-gradient(circle at 30% 40%, rgba(79, 70, 229, 0.2) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(59, 130, 246, 0.2) 0%, transparent 50%)",
+            filter: "blur(40px)",
+          }}
+          animate={{
+            opacity: [0.15, 0.25, 0.15],
+          }}
+          transition={{
+            duration: 12,
             repeat: Infinity,
             repeatType: "reverse",
           }}
@@ -174,24 +162,7 @@ const ParticleBackground = () => {
         {/* Grid pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(60,60,80,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(60,60,80,0.05)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
         
-        {/* Cursor trails */}
-        {trails.map((trail, index) => (
-          <motion.div
-            key={trail.id}
-            className="absolute w-2 h-2 rounded-full pointer-events-none"
-            style={{
-              left: trail.x,
-              top: trail.y,
-              background: `rgba(${100 + index * 10}, ${150 + index * 5}, ${200 + index * 5}, ${0.8 - index * 0.05})`,
-              boxShadow: `0 0 ${10 + index * 2}px ${2 + index}px rgba(100, 150, 200, ${0.3 - index * 0.02})`,
-            }}
-            initial={{ scale: 1, opacity: 0.8 }}
-            animate={{ scale: 0, opacity: 0 }}
-            transition={{ duration: 1, delay: index * 0.02 }}
-          />
-        ))}
-        
-        {/* Interactive particles */}
+        {/* Enhanced particles with more pronounced twinkling */}
         {particlesData.map((particle, index) => (
           <motion.div
             key={particle.id}
@@ -201,44 +172,133 @@ const ParticleBackground = () => {
               height: particle.size,
               left: particle.initialX,
               top: particle.initialY,
-              background: `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, 0.6)`,
-              boxShadow: "0 0 10px 2px rgba(100, 150, 200, 0.3)",
+              background: `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, 0.7)`,
+              boxShadow: `0 0 ${particle.size * 2}px ${particle.size / 2}px rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, 0.5)`,
             }}
             animate={{
               x: particle.positions.x,
               y: particle.positions.y,
-              scale: [1, 1.5, 1],
+              scale: [1, 1.3, 0.9, 1.2, 1],
+              opacity: particle.twinkle?.intensity || [0.6, 0.9, 0.6],
+              boxShadow: [
+                `0 0 ${particle.size * 1.5}px ${particle.size / 3}px rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, 0.4)`,
+                `0 0 ${particle.size * 3}px ${particle.size / 1.5}px rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, 0.7)`,
+                `0 0 ${particle.size * 1.5}px ${particle.size / 3}px rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, 0.4)`,
+              ]
             }}
             transition={{
               duration: particle.duration,
+              delay: particle.delay || 0,
               repeat: Infinity,
               ease: "linear",
-            }}
-            whileHover={{
-              scale: 2,
-              transition: { duration: 0.3 },
+              opacity: {
+                duration: particle.twinkle?.duration || 3,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut",
+                delay: particle.twinkle?.delay || 0,
+              },
+              scale: {
+                duration: particle.twinkle?.duration || 3,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut",
+                delay: particle.twinkle?.delay || 0,
+              },
+              boxShadow: {
+                duration: particle.twinkle?.duration || 3,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut",
+                delay: particle.twinkle?.delay || 0,
+              }
             }}
           />
         ))}
         
-        {/* Glowing orbs that follow cursor */}
+        {/* Shooting stars that appear randomly */}
         <motion.div
-          className="absolute w-96 h-96 rounded-full pointer-events-none"
+          className="absolute h-[1px] w-[100px] bg-white"
           style={{
-            x: springX,
-            y: springY,
-            background: "radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%)",
+            top: "15%",
+            left: "-10%",
+            rotate: 15,
+            opacity: 0,
+            transformOrigin: "left center",
+            boxShadow: "0 0 10px 1px rgba(255, 255, 255, 0.7)"
+          }}
+          animate={{
+            opacity: [0, 1, 0],
+            x: ["0%", "120%"],
+            width: ["0px", "100px", "0px"]
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            repeatDelay: 15,
+            ease: "easeOut",
+            delay: 5
+          }}
+        />
+        
+        <motion.div
+          className="absolute h-[1px] w-[80px] bg-white"
+          style={{
+            top: "45%",
+            left: "-8%",
+            rotate: 30,
+            opacity: 0,
+            transformOrigin: "left center",
+            boxShadow: "0 0 8px 1px rgba(255, 255, 255, 0.7)"
+          }}
+          animate={{
+            opacity: [0, 1, 0],
+            x: ["0%", "120%"],
+            width: ["0px", "80px", "0px"]
+          }}
+          transition={{
+            duration: 1.2,
+            repeat: Infinity,
+            repeatDelay: 20,
+            ease: "easeOut",
+            delay: 12
+          }}
+        />
+        
+        {/* Static glowing orbs for visual interest */}
+        <motion.div
+          className="absolute w-96 h-96 rounded-full pointer-events-none left-1/4 top-1/4"
+          style={{
+            background: "radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%)",
             filter: "blur(40px)",
+          }}
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.12, 0.16, 0.12],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            repeatType: "reverse",
+            ease: "easeInOut",
           }}
         />
         <motion.div
-          className="absolute w-64 h-64 rounded-full pointer-events-none"
+          className="absolute w-64 h-64 rounded-full pointer-events-none right-1/4 bottom-1/4"
           style={{
-            x: springX,
-            y: springY,
             background: "radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%)",
             filter: "blur(30px)",
-            transform: "translate(-50%, -50%)",
+          }}
+          animate={{
+            scale: [1, 1.15, 1],
+            opacity: [0.15, 0.2, 0.15],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            repeatType: "reverse",
+            ease: "easeInOut",
+            delay: 5
           }}
         />
       </motion.div>
@@ -293,6 +353,9 @@ const Hero = () => {
 
   return (
     <section ref={ref} className="relative min-h-[90vh] flex items-center overflow-hidden" suppressHydrationWarning>
+      {/* Include ParticleBackground only for the Hero section */}
+      <ParticleBackground />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10" suppressHydrationWarning>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" suppressHydrationWarning>
           <div className="space-y-6" suppressHydrationWarning>
