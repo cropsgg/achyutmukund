@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import { Resend } from 'resend';
+// Remove the direct Resend import to prevent build failures
+// import { Resend } from 'resend';
 
 export async function POST(request: Request) {
   try {
@@ -73,44 +74,41 @@ export async function POST(request: Request) {
     } catch (gmailError) {
       console.error('Failed to send email via Gmail:', gmailError);
       
-      // Try using Resend as a fallback if configured
-      if (process.env.RESEND_API_KEY) {
-        try {
-          const resend = new Resend(process.env.RESEND_API_KEY);
-          
-          const { data, error } = await resend.emails.send({
-            from: `Contact Form <onboarding@resend.dev>`,
-            to: [process.env.EMAIL_USER as string],
-            subject: `New Contact Form Submission from ${name}`,
-            html: `
-              <h2>New Contact Form Submission</h2>
-              <p><strong>Name:</strong> ${name}</p>
-              <p><strong>Email:</strong> ${email}</p>
-              <p><strong>Message:</strong></p>
-              <p>${message}</p>
-              <p><strong>Sent via Resend fallback</strong></p>
-            `,
-          });
-          
-          if (error) {
-            throw new Error(error.message);
+      // Use a simpler fallback method without requiring Resend
+      try {
+        // Try an alternative nodemailer configuration as fallback
+        const fallbackTransporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
           }
-          
-          console.log('Email sent successfully via Resend');
-          return NextResponse.json(
-            { message: 'Email sent successfully (via fallback service)' },
-            { status: 200 }
-          );
-        } catch (resendError) {
-          console.error('Failed to send email via Resend:', resendError);
-          return NextResponse.json(
-            { error: 'Failed to send email via all methods', details: 'Both primary and fallback email services failed' },
-            { status: 500 }
-          );
-        }
-      } else {
+        });
+        
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: process.env.EMAIL_USER,
+          subject: `New Contact Form Submission from ${name} (Fallback)`,
+          html: `
+            <h2>New Contact Form Submission (Sent via fallback method)</h2>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Message:</strong></p>
+            <p>${message}</p>
+          `,
+        };
+        
+        await fallbackTransporter.sendMail(mailOptions);
+        console.log('Email sent successfully via fallback method');
+        
         return NextResponse.json(
-          { error: 'Failed to send email', details: 'Primary email service failed and no fallback configured' },
+          { message: 'Email sent successfully (via fallback method)' },
+          { status: 200 }
+        );
+      } catch (fallbackError) {
+        console.error('Failed to send email via fallback method:', fallbackError);
+        return NextResponse.json(
+          { error: 'Failed to send email via all methods', details: 'Both primary and fallback email methods failed' },
           { status: 500 }
         );
       }
