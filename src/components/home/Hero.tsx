@@ -62,8 +62,8 @@ const generateDeterministicParticles = () => {
       },
       color: {
         r: Math.floor(pseudoRandom() * 120) + 135,
-        g: Math.floor(pseudoRandom() * 70) + 160,
-        b: Math.floor(pseudoRandom() * 100) + 200
+        g: Math.floor(pseudoRandom() * 120) + 135,
+        b: Math.floor(pseudoRandom() * 50) + 100
       },
       positions: {
         x: [
@@ -119,7 +119,7 @@ const ParticleBackground = () => {
       >
         {/* Animated gradient background with more dynamic movement */}
         <motion.div 
-          className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-gray-950 to-indigo-950/40"
+          className="absolute inset-0 bg-gradient-to-br from-gray-800/40 via-gray-950 to-gray-800/40"
           style={{
             backgroundSize: "200% 200%",
             backgroundPosition: "center",
@@ -146,7 +146,7 @@ const ParticleBackground = () => {
         <motion.div
           className="absolute inset-0 opacity-20"
           style={{
-            background: "radial-gradient(circle at 30% 40%, rgba(79, 70, 229, 0.2) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(59, 130, 246, 0.2) 0%, transparent 50%)",
+            background: "radial-gradient(circle at 30% 40%, rgba(200, 200, 200, 0.1) 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(200, 200, 200, 0.1) 0%, transparent 50%)",
             filter: "blur(40px)",
           }}
           animate={{
@@ -269,7 +269,7 @@ const ParticleBackground = () => {
         <motion.div
           className="absolute w-96 h-96 rounded-full pointer-events-none left-1/4 top-1/4"
           style={{
-            background: "radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(200, 200, 200, 0.08) 0%, transparent 70%)",
             filter: "blur(40px)",
           }}
           animate={{
@@ -286,7 +286,7 @@ const ParticleBackground = () => {
         <motion.div
           className="absolute w-64 h-64 rounded-full pointer-events-none right-1/4 bottom-1/4"
           style={{
-            background: "radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(200, 200, 200, 0.09) 0%, transparent 70%)",
             filter: "blur(30px)",
           }}
           animate={{
@@ -370,7 +370,7 @@ const Hero = () => {
                   variants={itemVariants} 
                   className="text-4xl sm:text-5xl lg:text-6xl font-bold"
                 >
-                  Hi, I&apos;m <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Achyut Mukund</span>
+                  Hi, I&apos;m <span className="text-blue-400">Achyut Mukund</span>
                 </motion.h1>
                 <motion.h2 
                   variants={itemVariants} 
@@ -442,7 +442,7 @@ const Hero = () => {
             ) : (
               <div className="space-y-6">
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold">
-                  Hi, I&apos;m <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Achyut Mukund</span>
+                  Hi, I&apos;m <span className="text-blue-400">Achyut Mukund</span>
                 </h1>
                 <h2 className="text-xl sm:text-2xl text-gray-300">
                   Computer Science undergraduate at VIT Chennai
@@ -492,7 +492,7 @@ const Hero = () => {
                 animate="visible"
                 className="relative"
               >
-                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full blur-md opacity-80" suppressHydrationWarning></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full blur-md opacity-60" suppressHydrationWarning></div>
                 <motion.div 
                   whileHover={{ scale: 1.05, rotate: 5 }}
                   transition={{ duration: 0.3 }}
@@ -516,7 +516,7 @@ const Hero = () => {
                     opacity: [0.7, 0.4, 0.7]
                   }}
                   transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                  className="absolute -z-10 w-full h-full rounded-full border border-blue-500/30 top-0 left-0"
+                  className="absolute -z-10 w-full h-full rounded-full border border-gray-500/30 top-0 left-0"
                   suppressHydrationWarning
                 />
                 <motion.div
@@ -525,7 +525,7 @@ const Hero = () => {
                     opacity: [0.5, 0.2, 0.5]
                   }}
                   transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  className="absolute -z-10 w-[110%] h-[110%] rounded-full border border-indigo-500/20 -top-[5%] -left-[5%]"
+                  className="absolute -z-10 w-[110%] h-[110%] rounded-full border border-gray-500/20 -top-[5%] -left-[5%]"
                   suppressHydrationWarning
                 />
               </motion.div>

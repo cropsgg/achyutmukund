@@ -92,7 +92,12 @@ const Contact = () => {
               <FiMail size={20} />
             </div>
             <h4 className="font-medium mb-2">Email</h4>
-            <p className="text-gray-400">mukundachyut305@gmail.com</p>
+            <a 
+              href="mailto:mukundachyut305@gmail.com"
+              className="text-gray-400 hover:text-blue-400 transition-all duration-300 break-all"
+            >
+              mukundachyut305@gmail.com
+            </a>
           </div>
           
           <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-md">
