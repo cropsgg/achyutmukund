@@ -37,11 +37,8 @@ const Contact = () => {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json();
-      
       if (!response.ok) {
-        console.error('Form submission error:', result);
-        throw new Error(result.error || 'Failed to send message');
+        throw new Error('Failed to send message');
       }
 
       setSubmitSuccess(true);
@@ -53,12 +50,7 @@ const Contact = () => {
         setShowForm(false);
       }, 3000);
     } catch (error) {
-      console.error('Contact form error:', error);
-      setSubmitError(
-        error instanceof Error ? 
-          error.message : 
-          "Failed to send message. Please try again later or contact directly via email."
-      );
+      setSubmitError("Failed to send message. Please try again later.");
     } finally {
       setIsSubmitting(false);
     }
@@ -92,12 +84,7 @@ const Contact = () => {
               <FiMail size={20} />
             </div>
             <h4 className="font-medium mb-2">Email</h4>
-            <a 
-              href="mailto:mukundachyut305@gmail.com"
-              className="text-gray-400 hover:text-blue-400 transition-all duration-300 break-all"
-            >
-              mukundachyut305@gmail.com
-            </a>
+            <p className="text-gray-400 text-sm break-words">mukundachyut305@gmail.com</p>
           </div>
           
           <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-md">

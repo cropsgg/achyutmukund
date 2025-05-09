@@ -4,8 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import ConditionalBackground from "@/components/layout/ConditionalBackground";
 import { SectionProvider } from "@/components/SectionProvider";
+import ConditionalBackground from "@/components/layout/ConditionalBackground";
 
 const inter = Inter({ subsets: ["latin"] });
 
