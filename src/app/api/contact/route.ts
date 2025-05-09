@@ -22,96 +22,66 @@ export async function POST(request: Request) {
         hasEmailPass: !!process.env.EMAIL_PASS
       });
       return NextResponse.json(
-        { error: 'Email configuration is missing' },
+        { error: 'Email configuration is missing', details: 'EMAIL_USER or EMAIL_PASS environment variables are not set' },
         { status: 500 }
       );
     }
 
-    // Try sending with Gmail first
+    // Create a simpler transporter with Gmail service
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    // Verify transporter configuration
     try {
-      // Create a more secure transporter using TLS settings
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true, // use SSL
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-        tls: {
-          // do not fail on invalid certs
-          rejectUnauthorized: false
-        }
-      });
+      await transporter.verify();
+      console.log('Email transporter verified successfully');
+    } catch (verifyError) {
+      console.error('Email transporter verification failed:', verifyError);
+      return NextResponse.json(
+        { error: 'Email service configuration error', details: verifyError instanceof Error ? verifyError.message : 'Unknown error' },
+        { status: 500 }
+      );
+    }
 
-      // Email content
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: process.env.EMAIL_USER, // Your email where you want to receive messages
-        subject: `New Contact Form Submission from ${name}`,
-        text: `
-          Name: ${name}
-          Email: ${email}
-          Message: ${message}
-        `,
-        html: `
-          <h2>New Contact Form Submission</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Message:</strong></p>
-          <p>${message}</p>
-        `,
-      };
+    // Email content
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER, // Your email where you want to receive messages
+      subject: `New Contact Form Submission from ${name}`,
+      text: `
+        Name: ${name}
+        Email: ${email}
+        Message: ${message}
+      `,
+      html: `
+        <h2>New Contact Form Submission</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Message:</strong></p>
+        <p>${message}</p>
+      `,
+    };
 
-      // Try sending the email
+    // Send the email
+    try {
       await transporter.sendMail(mailOptions);
-      console.log('Email sent successfully via Gmail');
-      
+      console.log('Email sent successfully');
+
       return NextResponse.json(
         { message: 'Email sent successfully' },
         { status: 200 }
       );
-    } catch (gmailError) {
-      console.error('Failed to send email via Gmail:', gmailError);
-      
-      // Use a simpler fallback method without requiring Resend
-      try {
-        // Try an alternative nodemailer configuration as fallback
-        const fallbackTransporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-          }
-        });
-        
-        const mailOptions = {
-          from: process.env.EMAIL_USER,
-          to: process.env.EMAIL_USER,
-          subject: `New Contact Form Submission from ${name} (Fallback)`,
-          html: `
-            <h2>New Contact Form Submission (Sent via fallback method)</h2>
-            <p><strong>Name:</strong> ${name}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Message:</strong></p>
-            <p>${message}</p>
-          `,
-        };
-        
-        await fallbackTransporter.sendMail(mailOptions);
-        console.log('Email sent successfully via fallback method');
-        
-        return NextResponse.json(
-          { message: 'Email sent successfully (via fallback method)' },
-          { status: 200 }
-        );
-      } catch (fallbackError) {
-        console.error('Failed to send email via fallback method:', fallbackError);
-        return NextResponse.json(
-          { error: 'Failed to send email via all methods', details: 'Both primary and fallback email methods failed' },
-          { status: 500 }
-        );
-      }
+    } catch (emailError) {
+      console.error('Error sending email:', emailError);
+      return NextResponse.json(
+        { error: 'Failed to send email', details: emailError instanceof Error ? emailError.message : 'Unknown error' },
+        { status: 500 }
+      );
     }
   } catch (error) {
     console.error('Error in contact form processing:', error);

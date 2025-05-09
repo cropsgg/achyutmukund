@@ -37,8 +37,11 @@ const Contact = () => {
         body: JSON.stringify(data),
       });
 
+      const result = await response.json();
+      
       if (!response.ok) {
-        throw new Error('Failed to send message');
+        console.error('Form submission error:', result);
+        throw new Error(result.error || result.details || 'Failed to send message');
       }
 
       setSubmitSuccess(true);
@@ -50,7 +53,12 @@ const Contact = () => {
         setShowForm(false);
       }, 3000);
     } catch (error) {
-      setSubmitError("Failed to send message. Please try again later.");
+      console.error('Contact form error:', error);
+      setSubmitError(
+        error instanceof Error 
+          ? error.message 
+          : "Failed to send message. Please try again later."
+      );
     } finally {
       setIsSubmitting(false);
     }
