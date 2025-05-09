@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FiMenu, FiX } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
-import { RiCodeSSlashFill } from "react-icons/ri";
 
 const Navbar = () => {
   const [mounted, setMounted] = useState(false);
@@ -75,25 +74,15 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" suppressHydrationWarning>
         <div className="flex justify-between h-16" suppressHydrationWarning>
           <div className="flex items-center" suppressHydrationWarning>
-            {/* Logo instead of text */}
-            {mounted ? (
-              <Link href="/" className="flex items-center relative group">
-                <motion.div 
-                  initial={{ rotate: -10, scale: 0.9 }}
-                  animate={{ rotate: 0, scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex items-center space-x-2"
-                >
-                  <div className="h-9 w-9 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center overflow-hidden">
-                    <RiCodeSSlashFill size={22} className="text-white" />
-                  </div>
-                </motion.div>
-              </Link>
-            ) : (
-              <div className="h-9 w-9 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center" suppressHydrationWarning>
-                <RiCodeSSlashFill size={22} className="text-white" />
+            {/* Elegant Static Full Name */}
+            <Link href="/" className="flex items-center">
+              <div className="flex flex-col">
+                <span className="text-xl md:text-2xl font-bold tracking-wide text-white">
+                  <span className="text-blue-400">Achyut</span> <span className="text-gray-200">Mukund</span>
+                </span>
+                <div className="h-[2px] w-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full mt-0.5"></div>
               </div>
-            )}
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
@@ -107,19 +96,10 @@ const Navbar = () => {
                     className={`relative px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
                       activeSection === item.href
                         ? "text-blue-400"
-                        : "hover:text-blue-400"
+                        : "text-gray-300 hover:text-gray-100"
                     }`}
                   >
                     {item.label}
-                    {activeSection === item.href && (
-                      <motion.div
-                        layoutId="nav-indicator"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.2 }}
-                      />
-                    )}
                   </Link>
                 ))}
               </div>
@@ -163,8 +143,8 @@ const Navbar = () => {
                     href={`#${item.href}`} 
                     className={`block px-3 py-2 rounded-md transition-colors duration-300 ${
                       activeSection === item.href
-                        ? "bg-blue-900/20 text-blue-400"
-                        : "hover:bg-gray-800"
+                        ? "text-blue-400"
+                        : "text-gray-300 hover:text-gray-100"
                     }`}
                     onClick={toggleMenu}
                   >

@@ -15,7 +15,7 @@ const Footer = () => {
           </div>
           <div className="flex space-x-6">
             <Link 
-              href="https://github.com/achyutmukund" 
+              href="https://github.com/cropsgg" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
@@ -24,7 +24,7 @@ const Footer = () => {
               <FiGithub size={20} />
             </Link>
             <Link 
-              href="https://linkedin.com/in/achyutmukund" 
+              href="https://www.linkedin.com/in/achyut-mukund-845857289/" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"

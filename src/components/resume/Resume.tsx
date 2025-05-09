@@ -110,8 +110,7 @@ const Resume = () => {
           rel="noopener noreferrer"
           className="inline-flex items-center bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg text-lg font-medium transition-colors"
         >
-          <FiDownload className="mr-2" />
-          Download Resume
+          View Resume
         </motion.a>
       </div>
       

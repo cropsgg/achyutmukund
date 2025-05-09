@@ -6,7 +6,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {
-    appDir: true,
+    // appDir is now the default in Next.js 15+ and no longer needed
   },
 }
 

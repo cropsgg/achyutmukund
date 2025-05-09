@@ -4,7 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import GlobalBackground from "@/components/layout/GlobalBackground";
+import { SectionProvider } from "@/components/SectionProvider";
+import ConditionalBackground from "@/components/layout/ConditionalBackground";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,12 +28,14 @@ export default function RootLayout({
           forcedTheme="dark"
           disableTransitionOnChange
         >
-          <div className="flex flex-col min-h-screen relative" suppressHydrationWarning>
-            <GlobalBackground />
-            <Navbar />
-            <main className="flex-grow relative z-10" suppressHydrationWarning>{children}</main>
-            <Footer />
-          </div>
+          <SectionProvider>
+            <div className="flex flex-col min-h-screen relative" suppressHydrationWarning>
+              <ConditionalBackground />
+              <Navbar />
+              <main className="flex-grow relative z-10" suppressHydrationWarning>{children}</main>
+              <Footer />
+            </div>
+          </SectionProvider>
         </ThemeProvider>
       </body>
     </html>
