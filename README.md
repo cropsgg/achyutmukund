@@ -1,6 +1,6 @@
 # Portfolio Website
 
-Hey this is Achyut Mukund , Welcome to my Portfolio website :) 
+Hey this is Achyut Mukund , Welcome to my Portfolio website :D
 
 ## Website Features
 
